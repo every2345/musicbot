@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import phantomjs
 import yt_dlp
 import asyncio
 
