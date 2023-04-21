@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import phantomjs
 import yt_dlp
 import asyncio
 
@@ -45,9 +44,9 @@ async def play_music(ctx, url):
 
         while voice_client.is_playing():
             await asyncio.sleep(0.5)
-
-        music_queue.pop(0)
+        
         if len(music_queue) > 0:
+            music_queue.pop(0)
             await play_music(ctx, music_queue[0]['webpage_url'])
         else:
             voice_client = ctx.guild.voice_client
@@ -55,7 +54,6 @@ async def play_music(ctx, url):
                 await voice_client.pause()
     else:
         await ctx.send("Bot chưa được mời vào kênh thoại...")
-        await asyncio.sleep(0.5)
        
 @bot.command()
 async def join(ctx):
@@ -152,8 +150,9 @@ async def skip(ctx):
             voice_client.pause()
             await ctx.send("Bot đã chuyển sang bài nhạc khác trong hàng đợi.")
             music_queue.pop(0)
-            next_song_info = music_queue[0]
-            await play_music(ctx, next_song_info['webpage_url'])  
+            if len(music_queue) > 0:
+                next_song_info = music_queue[0]
+                await play_music(ctx, next_song_info['webpage_url'])
         else:
             await ctx.send("Hết bài nhạc trong hàng đợi.")
     elif len(music_queue) > 0:
