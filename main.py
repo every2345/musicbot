@@ -5,7 +5,6 @@ import asyncio
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
-
 music_queue = []
 authorized_users = []  
 
@@ -65,6 +64,19 @@ async def join(ctx):
     await ctx.send(f"Bot đã được mời vào kênh thoại: {voice_channel.name} Nya~~~")
 
 @bot.command()
+async def guide(ctx):
+    voice_client = ctx.guild.voice_client
+    if voice_client is None or not voice_client.is_connected():
+        await ctx.send("Bot chưa được mời vào kênh thoại...")
+        return
+    else:
+        await ctx.send('''Hướng dẫn sửa dụng bot và các lệnh cơ bản
+- Lưu ý: Bạn phải cấp quyền người dùng chỉ định cho bot để có thể sử dụng các lệnh.
+- Thông tin các lệnh hiện tại của bot:
+- !join: Sử dụng để mời bot vào kênh thoại.
+- !permission <id user>: Sử dụng để cấp quyền sử dụng bot cho một người dùng chỉ định''')
+
+@bot.command()
 async def permission(ctx, member: commands.MemberConverter):
     if not member:
         await ctx.send("Không tìm thấy người dùng.")
@@ -107,7 +119,6 @@ async def play(ctx, url):
         await play_music(ctx, info['webpage_url'])
     else:
         await ctx.send(f'Bài nhạc "{info["title"]}" đã được thêm vào hàng đợi.')
-
 
 @bot.command()
 async def show(ctx):
@@ -195,7 +206,6 @@ async def pause(ctx):
     else:
         await ctx.send("Bot không đang phát bài nhạc.")
 
-
 @bot.command()
 async def resume(ctx):
     voice_client = ctx.guild.voice_client
@@ -208,7 +218,6 @@ async def resume(ctx):
         await ctx.send("Bài nhạc đã được tiếp tục.")
     else:
         await ctx.send("Bot đang không bị tạm dừng.")
-
 
 @bot.command()
 async def stop(ctx):
