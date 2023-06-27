@@ -95,6 +95,12 @@ async def permission(ctx, member: commands.MemberConverter):
 
 @bot.command()
 async def play(ctx, url):
+    #Check Syntax
+    if not url.startswith("https://www.youtube.com/watch?v="):
+        await ctx.send("Cú pháp không hợp lệ. Vui lòng nhập một liên kết YouTube hợp lệ.")
+        return
+
+    #Check bot 
     voice_client = ctx.guild.voice_client
     if voice_client is None or not voice_client.is_connected():
         await ctx.send("Bot chưa được mời vào kênh thoại...")
@@ -231,4 +237,4 @@ async def stop(ctx):
     await voice_client.disconnect()
     await ctx.send("Bot đã ngừng phát nhạc và đi ngủ đây Nya~~~.")
 
-bot.run('bot token')
+bot.run('MTA4OTAxMjI0NDYyNjU0MjY0Mg.GvtkTN.7-Edo8TjKjPGBeUlG5leBzgN6W5xfCTXvZxAdk')
