@@ -237,4 +237,4 @@ async def stop(ctx):
     await voice_client.disconnect()
     await ctx.send("Bot đã ngừng phát nhạc và đi ngủ đây Nya~~~.")
 
-bot.run('MTA4OTAxMjI0NDYyNjU0MjY0Mg.GvtkTN.7-Edo8TjKjPGBeUlG5leBzgN6W5xfCTXvZxAdk')
+bot.run('bot token')
