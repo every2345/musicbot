@@ -249,7 +249,7 @@ async def stop(ctx):
         await ctx.send(f"{ctx.author.mention}, bạn không được phép sử dụng lệnh này.")
         return
 
-    if voice_client.is_paused():
+    if voice_client.is_paused() or not voice_client.is_playing():
         voice_client.stop()
         await voice_client.disconnect()
         await ctx.send("Bot đã ngừng phát nhạc và đi ngủ đây Nya~~~.")
