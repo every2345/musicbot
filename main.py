@@ -3,15 +3,16 @@ from discord.ext import commands
 import yt_dlp
 import asyncio
 
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix='!', intents=intents)
-music_queue = []
-authorized_users = []  
+intents = discord.Intents.all() 
+bot = commands.Bot(command_prefix='!', intents=intents) #Syntax for bot using command
+music_queue = [] #Music queue to contain music list
+authorized_users = []  #To save the user permission
 
 @bot.event
 async def on_ready():
     print(f"Bot logged in as {bot.user}")
 
+#Play music Core.
 async def play_music(ctx, url):
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -45,15 +46,21 @@ async def play_music(ctx, url):
             await asyncio.sleep(0.5)
         
         if len(music_queue) > 0:
-            music_queue.pop(0)
-            await play_music(ctx, music_queue[0]['webpage_url'])
+            music_queue.pop(0)  # Remove the currently playing song
+            if len(music_queue) > 0:
+                await play_music(ctx, music_queue[0]['webpage_url'])  # Play the next song
+            else:
+                voice_client = ctx.guild.voice_client
+                if voice_client is not None and voice_client.is_playing():
+                    await voice_client.pause()
         else:
             voice_client = ctx.guild.voice_client
             if voice_client is not None and voice_client.is_playing():
                 await voice_client.pause()
     else:
         await ctx.send("Bot chưa được mời vào kênh thoại...")
-       
+
+#Join command to invite bot join voice channel.
 @bot.command()
 async def join(ctx):
     voice_channel = getattr(ctx.author.voice, 'channel', None)
@@ -62,7 +69,8 @@ async def join(ctx):
         return
     await voice_channel.connect()
     await ctx.send(f"Bot đã được mời vào kênh thoại: {voice_channel.name} Nya~~~")
-
+    
+#Command to show how to use bot.
 @bot.command()
 async def guide(ctx):
     voice_client = ctx.guild.voice_client
@@ -76,6 +84,7 @@ async def guide(ctx):
 - !join: Sử dụng để mời bot vào kênh thoại.
 - !permission <id user>: Sử dụng để cấp quyền sử dụng bot cho một người dùng chỉ định''')
 
+#command to permission who can use this bot
 @bot.command()
 async def permission(ctx, member: commands.MemberConverter):
     if not member:
@@ -93,6 +102,7 @@ async def permission(ctx, member: commands.MemberConverter):
     authorized_users.append(member)
     await ctx.send(f"{member.name} đã được ủy quyền để sử dụng bot.")
 
+#command "!play" to play the music 
 @bot.command()
 async def play(ctx, url):
     #Check Syntax
@@ -126,6 +136,7 @@ async def play(ctx, url):
     else:
         await ctx.send(f'Bài nhạc "{info["title"]}" đã được thêm vào hàng đợi.')
 
+#command "!show" to show all music availabel in queue
 @bot.command()
 async def show(ctx):
     if len(music_queue) == 0:
@@ -136,6 +147,7 @@ async def show(ctx):
             queue_msg += f"{i+1}. {song['title']} - {song['uploader']} ({song['duration']})\n"
         await ctx.send(queue_msg)
 
+#Command "!clear" to clear all music in queue
 @bot.command()
 async def clear(ctx):
     voice_client = ctx.guild.voice_client
@@ -155,6 +167,7 @@ async def clear(ctx):
         music_queue = []
         await ctx.send("Không có bài hát nào trong hàng đợi.")
 
+#Command "!skip" to foward next music in queue
 @bot.command()
 async def skip(ctx):
     voice_client = ctx.guild.voice_client
@@ -178,6 +191,7 @@ async def skip(ctx):
     else:
         await ctx.send("Hàng đợi nhạc rỗng.")
 
+#Command "!volume" to change the music volume
 @bot.command()
 async def volume(ctx, vol: int):
     if not 0 <= vol <= 100:
@@ -199,6 +213,7 @@ async def volume(ctx, vol: int):
     else:
         await ctx.send("Không có bài nhạc đang được chơi trên voice channel")
 
+#Command "!pause" to pause the current music playing
 @bot.command()
 async def pause(ctx):
     voice_client = ctx.guild.voice_client
@@ -212,6 +227,7 @@ async def pause(ctx):
     else:
         await ctx.send("Bot không đang phát bài nhạc.")
 
+#Command "!resume" to continue the current music playing
 @bot.command()
 async def resume(ctx):
     voice_client = ctx.guild.voice_client
@@ -225,6 +241,7 @@ async def resume(ctx):
     else:
         await ctx.send("Bot đang không bị tạm dừng.")
 
+#Command "!stop" to stop and bot will exit voice channel
 @bot.command()
 async def stop(ctx):
     voice_client = ctx.guild.voice_client
@@ -232,9 +249,13 @@ async def stop(ctx):
         await ctx.send(f"{ctx.author.mention}, bạn không được phép sử dụng lệnh này.")
         return
 
-    if voice_client.is_playing():
+    if voice_client.is_paused():
         voice_client.stop()
-    await voice_client.disconnect()
-    await ctx.send("Bot đã ngừng phát nhạc và đi ngủ đây Nya~~~.")
+        await voice_client.disconnect()
+        await ctx.send("Bot đã ngừng phát nhạc và đi ngủ đây Nya~~~.")
+  
+    else:
+        await ctx.send("Bạn cần dừng bài nhạc hiện đang chơi để sử dụng lệnh này!")
 
-bot.run('bot token')
+#Key run of this bot
+bot.run('Bot token')
