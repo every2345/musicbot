@@ -91,14 +91,22 @@ async def permission(ctx, member: commands.MemberConverter):
         await ctx.send("Không tìm thấy người dùng.")
         return
 
-    permissions = ctx.channel.permissions_for(member)
-    if not permissions.administrator:
-        await ctx.send(f"{member.name} không được ủy quyền để sử dụng bot.")
+    if member.id == ctx.author.id:  # Kiểm tra nếu người dùng yêu cầu tự ủy quyền cho chính họ
+        if member not in authorized_users:
+            authorized_users.append(member)
+            await ctx.send(f"{member.name} đã tự ủy quyền cho chính mình để sử dụng bot.")
+        else:
+            await ctx.send(f"{member.name} đã được tự ủy quyền sử dụng bot từ trước đó.")
+        return
+
+    if member in authorized_users:
+        await ctx.send(f"{member.name} đã được ủy quyền để sử dụng bot.")
         return
 
     if authorized_users:
         old_user = authorized_users.pop()
         await ctx.send(f"{old_user.name} đã bị gỡ bỏ quyền ủy quyền sử dụng bot.")
+
     authorized_users.append(member)
     await ctx.send(f"{member.name} đã được ủy quyền để sử dụng bot.")
 
