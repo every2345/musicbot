@@ -82,7 +82,15 @@ async def guide(ctx):
 - Lưu ý: Bạn phải cấp quyền người dùng chỉ định cho bot để có thể sử dụng các lệnh.
 - Thông tin các lệnh hiện tại của bot:
 - !join: Sử dụng để mời bot vào kênh thoại.
-- !permission <id user>: Sử dụng để cấp quyền sử dụng bot cho một người dùng chỉ định''')
+- !permission <id user>: Sử dụng để cấp quyền sử dụng bot cho một người dùng chỉ định
+- !play <link youtubbe>: Sử dụng để chơi nhạc thông qua địa chỉ video youtube được chỉ định
+- !show: Sử dụng để xem tất cả các bài nhạc đang nằm trong playlist
+- !clear: Sử dụng để xóa tất cả nhạc trong playlist
+- !skip: Sử dụng để chuyển sang bài nhạc tiếp theo trong playlist 
+- !volume: Tăng giảm âm ượng bài nhạc đang phát hiện tại (Giới hạn âm lượng 0 - 100)
+- !pause: Tạm dừng bài nhạc đang phát
+- !resume: Tiếp tục bài nhạc đang phát
+- !stop: Dừng nhạc và thoát bỏ (khuyến nghị sử dụng khi không còn xài bot nữa)''')
 
 #command to permission who can use this bot
 @bot.command()
@@ -147,6 +155,12 @@ async def play(ctx, url):
 #command "!show" to show all music availabel in queue
 @bot.command()
 async def show(ctx):
+    
+    voice_client = ctx.guild.voice_client
+    if ctx.author not in authorized_users:
+        await ctx.send(f"{ctx.author.mention}, bạn không được phép sử dụng lệnh này.")
+        return
+
     if len(music_queue) == 0:
         await ctx.send("Hàng đợi đang trống")
     else:
@@ -264,6 +278,5 @@ async def stop(ctx):
   
     else:
         await ctx.send("Bạn cần dừng bài nhạc hiện đang chơi để sử dụng lệnh này!")
-
 #Key run of this bot
 bot.run('Bot token')
