@@ -1,3 +1,6 @@
+Important: Ffmpeg must be installed and add to Path (Environments Variables)
+
+**Python libraries**
 absl-py==2.0.0
 aiohttp==3.8.6
 aiosignal==1.3.1
